@@ -55,18 +55,25 @@ def get_weekly_fixtures_analysis():
 
     for league in LEAGUES:
         try:
-            url = f"{BASE_URL}/competitions/{league}/matches?status=SCHEDULED"
+            url = (f"{BASE_URL}/competitions/{league}/matches"
+                   f"?status=SCHEDULED&dateFrom={today.isoformat()}&dateTo={next_week.isoformat()}")
             res = requests.get(url, headers=headers)
+
+            if res.status_code != 200:
+                results.append({
+                    "competition": league,
+                    "error": f"API error {res.status_code}: {res.text}"
+                })
+                continue
+
             matches = res.json().get("matches", [])
 
             for match in matches:
                 match_date = datetime.fromisoformat(match['utcDate'].replace("Z", "+00:00")).date()
-                if not (today <= match_date <= next_week):
-                    continue
+                date_str = datetime.fromisoformat(match['utcDate'].replace("Z", "+00:00")).strftime('%Y-%m-%d %H:%M')
 
                 home = match['homeTeam']
                 away = match['awayTeam']
-                date_str = datetime.fromisoformat(match['utcDate'].replace("Z", "+00:00")).strftime('%Y-%m-%d %H:%M')
 
                 home_form = get_team_recent_results(home['id'])
                 away_form = get_team_recent_results(away['id'])
@@ -104,3 +111,4 @@ def get_weekly_fixtures_analysis():
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
+
