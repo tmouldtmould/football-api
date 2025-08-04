@@ -9,8 +9,20 @@ API_KEY = "c8264285db854e90a9a86d56c24898e5"
 BASE_URL = "https://api.football-data.org/v4"
 headers = {"X-Auth-Token": API_KEY}
 
-# Leagues to pull
-LEAGUES = ["PL", "SA", "PD", "BL1", "FL1", "DED", "BSA", "PPL", "ELC", "EC", "CL"]
+# Leagues to pull (official codes)
+LEAGUES = [
+    "CL",    # UEFA Champions League
+    "BL1",   # Bundesliga
+    "DED",   # Eredivisie
+    "BSA",   # Campeonato Brasileiro Série A
+    "PD",    # Primera Division (La Liga)
+    "FL1",   # Ligue 1
+    "ELC",   # Championship
+    "PPL",   # Primeira Liga
+    "EC",    # European Championship
+    "SA",    # Serie A
+    "PL"     # Premier League
+]
 
 def get_team_recent_results(team_id, limit=5):
     url = f"{BASE_URL}/teams/{team_id}/matches?status=FINISHED&limit={limit}"
