@@ -58,8 +58,10 @@ def get_weekly_fixtures_analysis():
             url = (f"{BASE_URL}/competitions/{league}/matches"
                    f"?status=SCHEDULED&dateFrom={today.isoformat()}&dateTo={next_week.isoformat()}")
             res = requests.get(url, headers=headers)
+            print(f"[DEBUG] League {league}: Status {res.status_code}")
 
             if res.status_code != 200:
+                print(f"[ERROR] Failed to fetch matches for {league}. Response: {res.text}")
                 results.append({
                     "competition": league,
                     "error": f"API error {res.status_code}: {res.text}"
@@ -67,6 +69,7 @@ def get_weekly_fixtures_analysis():
                 continue
 
             matches = res.json().get("matches", [])
+            print(f"[DEBUG] League {league}: Found {len(matches)} matches.")
 
             for match in matches:
                 match_date = datetime.fromisoformat(match['utcDate'].replace("Z", "+00:00")).date()
@@ -100,7 +103,9 @@ def get_weekly_fixtures_analysis():
                     "betting_tips": betting_tips,
                     "note": "Always bet responsibly and within your means."
                 })
+
         except Exception as e:
+            print(f"[EXCEPTION] League {league}: {str(e)}")
             results.append({
                 "competition": league,
                 "error": str(e)
@@ -111,4 +116,6 @@ def get_weekly_fixtures_analysis():
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
+
+
 
